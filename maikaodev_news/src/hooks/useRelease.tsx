@@ -46,7 +46,9 @@ export const useRelease = () => {
   };
 
   return {
+    id,
     release,
+    setRelease,
     offset,
     animationOnLoad,
     router,
