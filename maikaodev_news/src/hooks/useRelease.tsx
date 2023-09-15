@@ -31,7 +31,9 @@ export const useRelease = () => {
     } catch (error) {
       alert('Error: ' + error);
     } finally {
-      setIsLoading(false);
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 2000);
     }
   };
 
@@ -47,8 +49,7 @@ export const useRelease = () => {
   };
 
   const addFavorites = (release: ReleaseProps) => {
-    const newFavorites: any = [...favoritesReleases, { release }];
-    addFavorites(newFavorites);
+    addFavorites(release);
   };
 
   return {

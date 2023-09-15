@@ -56,8 +56,10 @@ export default function Product() {
       </Link>
 
       {isLoading && (
-        <View>
-          <Text>Carregando</Text>
+        <View
+          style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+        >
+          <Text style={{ fontSize: 40, fontWeight: 'bold' }}>Carregando...</Text>
         </View>
       )}
 
