@@ -15,6 +15,8 @@ export default function Product() {
     id,
     release,
     setRelease,
+    isLoading,
+    setIsLoading,
     fectchRelease,
     animationOnLoad,
     shareNews,
@@ -24,6 +26,7 @@ export default function Product() {
   } = useRelease();
 
   useEffect(() => {
+    setIsLoading(true);
     fectchRelease();
     animationOnLoad();
 
@@ -31,6 +34,7 @@ export default function Product() {
   }, []);
 
   useEffect(() => {
+    setIsLoading(true);
     animationOnLoad();
     fectchRelease();
   }, [id]);
@@ -51,61 +55,69 @@ export default function Product() {
         </TouchableOpacity>
       </Link>
 
-      <Animated.View
-        style={[
-          styles.content,
-          {
-            transform: [
-              {
-                translateY: offset,
-              },
-            ],
-          },
-        ]}
-      >
-        {release.length >= 1 && (
-          <>
-            <Text style={styles.title}>{release[0].titulo}</Text>
-            <Text style={styles.intro}>
-              {release[0].introducao}
-              {'\n'}
-              {'\n'}
-              Confira mais detalhes{' '}
-              <Link
-                // @ts-ignore
-                href={release[0].link}
-                style={styles.link}
-              >
-                aqui
-              </Link>
-            </Text>
-            <Text style={styles.date}>
-              Data da publicação:{' '}
-              {release[0].data_publicacao.replace(' ', ' às ')}
-            </Text>
+      {isLoading && (
+        <View>
+          <Text>Carregando</Text>
+        </View>
+      )}
 
-            <View style={styles.wrapper}>
-              <TouchableOpacity style={styles.btn} onPress={shareNews}>
-                <Text style={styles.txtBtn}>Compartilhar notícia</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.btn}
-                onPress={() => addToFavorites(release[0])}
-              >
-                <Text style={styles.txtBtn}>Favoritar</Text>
-              </TouchableOpacity>
-            </View>
-          </>
-        )}
+      {!isLoading && (
+        <Animated.View
+          style={[
+            styles.content,
+            {
+              transform: [
+                {
+                  translateY: offset,
+                },
+              ],
+            },
+          ]}
+        >
+          {release.length >= 1 && (
+            <>
+              <Text style={styles.title}>{release[0].titulo}</Text>
+              <Text style={styles.intro}>
+                {release[0].introducao}
+                {'\n'}
+                {'\n'}
+                Confira mais detalhes{' '}
+                <Link
+                  // @ts-ignore
+                  href={release[0].link}
+                  style={styles.link}
+                >
+                  aqui
+                </Link>
+              </Text>
+              <Text style={styles.date}>
+                Data da publicação:{' '}
+                {release[0].data_publicacao.replace(' ', ' às ')}
+              </Text>
 
-        {release.length === 0 && (
-          <>
-            <Text style={styles.warn}>
-              Desculpe, mas não contém informações sobre a notícia...
-            </Text>
-          </>
-        )}
-      </Animated.View>
+              <View style={styles.wrapper}>
+                <TouchableOpacity style={styles.btn} onPress={shareNews}>
+                  <Text style={styles.txtBtn}>Compartilhar notícia</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.btn}
+                  onPress={() => addToFavorites(release[0])}
+                >
+                  <Text style={styles.txtBtn}>Favoritar</Text>
+                </TouchableOpacity>
+              </View>
+            </>
+          )}
+
+          {release.length === 0 && (
+            <>
+              <Text style={styles.warn}>
+                Desculpe, mas não contém informações sobre a notícia...
+              </Text>
+            </>
+          )}
+        </Animated.View>
+      )}
     </View>
   );
 }

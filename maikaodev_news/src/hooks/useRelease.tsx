@@ -10,6 +10,7 @@ export const useRelease = () => {
   const [release, setRelease] = useState<ReleaseProps[]>([]);
   const [offset, setOffset] = useState(new Animated.Value(100));
   const { favoritesReleases, addToFavorites } = useFavorites();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const router = useRouter();
 
@@ -24,9 +25,14 @@ export const useRelease = () => {
   };
 
   const fectchRelease = async () => {
-    const response = await api.get(`?tipo=release&idproduto=${id}&qtd=1`);
-
-    setRelease(response.data.items);
+    try {
+      const response = await api.get(`?tipo=release&idproduto=${id}&qtd=1`);
+      setRelease(response.data.items);
+    } catch (error) {
+      alert('Error: ' + error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const shareNews = async () => {
@@ -49,6 +55,8 @@ export const useRelease = () => {
     id,
     release,
     setRelease,
+    isLoading,
+    setIsLoading,
     offset,
     animationOnLoad,
     router,
