@@ -6,15 +6,19 @@ import {
   TouchableOpacity,
   View,
   Animated,
+  Share,
 } from 'react-native';
 import api from '../api';
 import { useEffect, useState } from 'react';
 import { ReleaseProps } from '../@types/hooks';
-import { transform } from 'typescript';
 
 export default function Product() {
   const [release, setRelease] = useState<ReleaseProps[]>([]);
   const [offset, setOffset] = useState(new Animated.Value(100));
+
+  const router = useRouter();
+
+  const { id } = useLocalSearchParams();
 
   const handleOnLoad = () => {
     Animated.timing(offset, {
@@ -24,14 +28,21 @@ export default function Product() {
     }).start();
   };
 
-  const router = useRouter();
-
-  const { id } = useLocalSearchParams();
-
   const fectchRelease = async () => {
     const response = await api.get(`?tipo=release&idproduto=${id}&qtd=1`);
 
     setRelease(response.data.items);
+  };
+
+  const shareNews = async () => {
+    try {
+      await Share.share({
+        message: `Compartilhe esta notícia: ${release[0].link}`,
+        url: release[0].link,
+      });
+    } catch (e) {
+      alert(`Ocorreu um erro inesperado: ${e}`);
+    }
   };
 
   useEffect(() => {
@@ -69,18 +80,27 @@ export default function Product() {
           ]}
         >
           <Text style={styles.title}>{release[0].titulo}</Text>
-          <Text style={styles.intro}>{release[0].introducao}</Text>
+          <Text style={styles.intro}>
+            {release[0].introducao}
+            {'\n'}
+            {'\n'}
+            Confira mais detalhes{' '}
+            <Link
+              // @ts-ignore
+              href={release[0].link}
+              style={styles.link}
+            >
+              aqui
+            </Link>
+          </Text>
           <Text style={styles.date}>
             Data da publicação:{' '}
             {release[0].data_publicacao.replace(' ', ' às ')}
           </Text>
-          <Link
-            // @ts-ignore
-            href={release[0].link}
-            style={styles.link}
-          >
-            Confira mais detalhes aqui
-          </Link>
+
+          <TouchableOpacity style={styles.btn} onPress={shareNews}>
+            <Text style={styles.txtBtn}>Compartilhar notícia</Text>
+          </TouchableOpacity>
         </Animated.View>
       )}
 
@@ -119,7 +139,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 40,
 
-    marginVertical: 24,
+    marginVertical: 8,
   },
   btn: {
     backgroundColor: '#222',
@@ -139,13 +159,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
   link: {
-    backgroundColor: '#222',
-    color: '#fff',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 16,
-    alignSelf: 'flex-start',
-    marginBottom: 16,
+    color: 'blue',
   },
   warn: {
     fontSize: 18,
