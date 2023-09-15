@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView, StyleSheet, Text } from 'react-native';
-import { useNews } from '../hooks/useNews';
+import { useNews } from '../../hooks/useNews';
 import { FlatList } from 'react-native-gesture-handler';
-import { News } from '../components/news';
+import { News } from '../../components/news';
 
 export default function App() {
   const { fetchNews, news } = useNews();

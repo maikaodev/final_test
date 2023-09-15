@@ -1,4 +1,4 @@
-import { Link, useLocalSearchParams, useRouter } from 'expo-router';
+import { Link } from 'expo-router';
 import {
   StatusBar,
   StyleSheet,
@@ -6,48 +6,24 @@ import {
   TouchableOpacity,
   View,
   Animated,
-  Share,
 } from 'react-native';
-import api from '../api';
-import { useEffect, useState } from 'react';
-import { ReleaseProps } from '../@types/hooks';
+import { useEffect } from 'react';
+import { useRelease } from '../../hooks/useRelease';
 
 export default function Product() {
-  const [release, setRelease] = useState<ReleaseProps[]>([]);
-  const [offset, setOffset] = useState(new Animated.Value(100));
-
-  const router = useRouter();
-
-  const { id } = useLocalSearchParams();
-
-  const handleOnLoad = () => {
-    Animated.timing(offset, {
-      toValue: 0,
-      duration: 1000,
-      useNativeDriver: false,
-    }).start();
-  };
-
-  const fectchRelease = async () => {
-    const response = await api.get(`?tipo=release&idproduto=${id}&qtd=1`);
-
-    setRelease(response.data.items);
-  };
-
-  const shareNews = async () => {
-    try {
-      await Share.share({
-        message: `Compartilhe esta notícia: ${release[0].link}`,
-        url: release[0].link,
-      });
-    } catch (e) {
-      alert(`Ocorreu um erro inesperado: ${e}`);
-    }
-  };
+  const {
+    release,
+    fectchRelease,
+    animationOnLoad,
+    shareNews,
+    router,
+    offset,
+    addToFavorites,
+  } = useRelease();
 
   useEffect(() => {
     fectchRelease();
-    handleOnLoad();
+    animationOnLoad();
   }, []);
 
   return (
@@ -98,9 +74,17 @@ export default function Product() {
             {release[0].data_publicacao.replace(' ', ' às ')}
           </Text>
 
-          <TouchableOpacity style={styles.btn} onPress={shareNews}>
-            <Text style={styles.txtBtn}>Compartilhar notícia</Text>
-          </TouchableOpacity>
+          <View style={styles.wrapper}>
+            <TouchableOpacity style={styles.btn} onPress={shareNews}>
+              <Text style={styles.txtBtn}>Compartilhar notícia</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.btn}
+              onPress={() => addToFavorites(release[0])}
+            >
+              <Text style={styles.txtBtn}>Favoritar</Text>
+            </TouchableOpacity>
+          </View>
         </Animated.View>
       )}
 
@@ -163,6 +147,10 @@ const styles = StyleSheet.create({
   },
   warn: {
     fontSize: 18,
+  },
+  wrapper: {
+    flexDirection: 'row',
+    gap: 16,
   },
 });
 
